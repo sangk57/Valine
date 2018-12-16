@@ -64,6 +64,7 @@ class Valine {
                                         <textarea placeholder="" class="veditor"></textarea>
                                         <div class="comment-smiles">
                                             <div class="vsmile-btn-wrap"><svg class="vsmile-btn" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>
+                                            <div class="vsmile-btn-wrap"><svg class="vsmile-btn2" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>
                                             <div class="vsmile-icons" style="display:none"></div>
                                         </div>
                                     </div>
@@ -188,6 +189,7 @@ class Valine {
 
         _root.loading.show();
         var query = new _root.v.Query('Comment');
+        console.log(_root.v)
         query.equalTo('url', defaultComment['url']);
         query.count().then(function (count) {
             _root.el.querySelector('.count').innerHTML = `${count}`;
@@ -239,8 +241,19 @@ class Valine {
             _root.el.querySelector('.veditor').focus();
         })
         let smile_btn = _root.el.querySelector('.vsmile-btn');
+        let xiaohuang = _root.el.querySelector('.vsmile-btn2');
         let smile_icons = _root.el.querySelector('.vsmile-icons');
         Event.on('click', smile_btn, (e)=>{
+            if (smile_icons.getAttribute('triggered')) {
+                smile_icons.setAttribute('style', 'display:none;');
+                smile_icons.removeAttribute('triggered');
+            }
+            else {
+                smile_icons.removeAttribute('style');
+                smile_icons.setAttribute('triggered', 1);
+            }
+        });
+        Event.on('click', xiaohuang, (e)=>{
             if (smile_icons.getAttribute('triggered')) {
                 smile_icons.setAttribute('style', 'display:none;');
                 smile_icons.removeAttribute('triggered');
@@ -281,6 +294,7 @@ class Valine {
             cq.skip((n - 1) * size);
             cq.find().then(rets => {
                 let len = rets.length;
+                // console.log(rets)
                 if (len) {
                     // _root.el.querySelector('.vlist').innerHTML = '';
                     for (let i = 0; i < len; i++) {
@@ -310,8 +324,18 @@ class Valine {
             _vcard.setAttribute('id', ret.id);
             let emailHash = ret.get('emailHash') == EMPTY_EMAIL_HASH ? DEFAULT_EMAIL_HASH : ret.get('emailHash')
             let gravatar_url = GRAVATAR_BASE_URL + emailHash + '?size=80';
+            
+            // const rid = ret.get('rid')
+            // let ridComment
+            // let cq = commonQuery();
+            // await cq.find().then(res => {
+            //     res.forEach(item => {
+            //         if(item.id === rid) ridComment = item.get('comment')
+            //     })
+            // }).catch(err => console.log(err))
+
             // language=HTML
-            _vcard.innerHTML = `<img class="vavatar" src="${gravatar_url}"/>
+            _vcard.innerHTML = `<a href="${ret.get('link') || 'javascript:void(0);'}" target="_blank" rel="nofollow" class="vavatarContent"> <img class="vavatar" src="${gravatar_url}"/></a>
                                         <section class="text-wrapper">
                                             <div class="vhead" >
                                                 <a href="${ret.get('link') || 'javascript:void(0);'}" target="_blank" rel="nofollow" > ${ret.get("nick")}</a>
@@ -321,8 +345,10 @@ class Valine {
                                             <div class="vcomment">${ret.get('comment')}</div>
                                             
                                         </section>
+                                        
                                         <div class="vfooter">
-                                        <a rid='${ret.id}' at='@${ret.get('nick')}' class="vat">回复</a>`;
+                                            <a rid='${ret.id}' at='@${ret.get('nick')}' class="vat">回复</a>
+                                        </div>`;
             let _vlist = _root.el.querySelector('.vlist');
             let _vlis = _vlist.querySelectorAll('li');
             let _vat = _vcard.querySelector('.vat');

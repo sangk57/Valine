@@ -20,7 +20,8 @@
       padding: 0 1em;
       margin: .5em 0;
       .vsmile-btn-wrap {
-        width: 100%;
+        display: inline-block;
+        width: 2em;
         height: 1.7em;
         svg {
           fill: #aaaaaa;
@@ -309,7 +310,7 @@
       }
 
       .vfooter {
-        margin: -2em 0 0;
+        // margin: -2em 0 0;
         .vat {
           color: #a9a4a4;
           padding: .2em 1em;
@@ -327,7 +328,7 @@
       // &+.vcard {
       //     border-top: 1px solid #dedede;
       // }
-      .vavatar {
+      .vavatarContent {
         flex: 0 0 auto;
         -ms-flex: 0 0 auto;
         margin-right: 1em;
@@ -337,11 +338,19 @@
         width: 3em;
         position: relative;
         border-radius: 50%;
-        &:hover {
-          transform: rotate(1turn);
-          -webkit-transform: rotate(1turn);
+        cursor: pointer;
+        overflow: hidden;
+        .vavatar {
+          height: 3em;
+          width: 3em;
+          border-radius: 50%;
+          &:hover {
+            transform: scale(1.2);
+            -webkit-transform: scale(1.2);
+          }
         }
       }
+      
       .text-wrapper{
         overflow: hidden;
         -webkit-box-sizing: border-box;
