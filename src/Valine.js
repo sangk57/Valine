@@ -189,7 +189,6 @@ class Valine {
 
         _root.loading.show();
         var query = new _root.v.Query('Comment');
-        console.log(_root.v)
         query.equalTo('url', defaultComment['url']);
         query.count().then(function (count) {
             _root.el.querySelector('.count').innerHTML = `${count}`;
@@ -281,6 +280,7 @@ class Valine {
             query.notEqualTo('isSpam', true);
             query.equalTo('url', defaultComment['url']);
             query.addDescending('createdAt');
+
             return query;
         };
 
@@ -324,17 +324,19 @@ class Valine {
             _vcard.setAttribute('id', ret.id);
             let emailHash = ret.get('emailHash') == EMPTY_EMAIL_HASH ? DEFAULT_EMAIL_HASH : ret.get('emailHash')
             let gravatar_url = GRAVATAR_BASE_URL + emailHash + '?size=80';
-            
-            // const rid = ret.get('rid')
-            // let ridComment
-            // let cq = commonQuery();
-            // await cq.find().then(res => {
-            //     res.forEach(item => {
-            //         if(item.id === rid) ridComment = item.get('comment')
-            //     })
-            // }).catch(err => console.log(err))
 
-            // language=HTML
+            const rid = ret.get('rid')
+            let lastId, lastNick, lastComment
+            if(rid) {
+                let nowQuery = new _root.v.Query('Comment')
+                nowQuery.get(rid).then(res => {
+                    console.log(res.get('comment'))
+                    lastId = res.id
+                    lastNick = res.get('nick')
+                    lastComment = res.get('comment')
+                })
+            }
+
             _vcard.innerHTML = `<a href="${ret.get('link') || 'javascript:void(0);'}" target="_blank" rel="nofollow" class="vavatarContent"> <img class="vavatar" src="${gravatar_url}"/></a>
                                         <section class="text-wrapper">
                                             <div class="vhead" >
@@ -343,7 +345,10 @@ class Valine {
                                                 <span class="vtime">${timeAgo(ret.get("createdAt"))}</span>
                                             </div>
                                             <div class="vcomment">${ret.get('comment')}</div>
-                                            
+                                            <div class="lastComment">
+                                                <a href="#${lastId}" class="nick">${lastNick}：</a>
+                                                ${lastComment}
+                                            </div>
                                         </section>
                                         
                                         <div class="vfooter">
