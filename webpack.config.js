@@ -43,7 +43,7 @@ module.exports = {
                 loader: 'babel-loader',
                 include: APP_PATH,
                 options: {
-                    presets: ['es2015']
+                    presets: ["env"]   
                 }
             },
             {

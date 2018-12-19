@@ -190,6 +190,7 @@ class Valine {
         _root.loading.show();
         var query = new _root.v.Query('Comment');
         query.equalTo('url', defaultComment['url']);
+        query.notEqualTo('isSpam', true);
         query.count().then(function (count) {
             _root.el.querySelector('.count').innerHTML = `${count}`;
             _root.bind(option);
@@ -289,15 +290,27 @@ class Valine {
             _root.loading.show();
             var size = 10;
             var count = Number(_root.el.querySelector('.count').innerText);
+
             let cq = commonQuery();
             cq.limit(size);
             cq.skip((n - 1) * size);
-            cq.find().then(rets => {
+            cq.find().then(async rets => {
                 let len = rets.length;
                 // console.log(rets)
                 if (len) {
                     // _root.el.querySelector('.vlist').innerHTML = '';
                     for (let i = 0; i < len; i++) {
+
+                        const rid = rets[i].get('rid')
+                        if(rid) {
+                            let nowQuery = new _root.v.Query('Comment')
+                            await nowQuery.get(rid).then(res => {
+                                rets[i].lastId = res.id
+                                rets[i].lastNick = res.get('nick')
+                                rets[i].lastComment = res.get('comment')
+                            })
+                        }
+
                         insertComment(rets[i], false)
                     }
                     var _vpage = _root.el.querySelector('.vpage');
@@ -322,20 +335,18 @@ class Valine {
             let _vcard = document.createElement('li');
             _vcard.setAttribute('class', 'vcard');
             _vcard.setAttribute('id', ret.id);
+
             let emailHash = ret.get('emailHash') == EMPTY_EMAIL_HASH ? DEFAULT_EMAIL_HASH : ret.get('emailHash')
             let gravatar_url = GRAVATAR_BASE_URL + emailHash + '?size=80';
 
-            const rid = ret.get('rid')
-            let lastId, lastNick, lastComment
-            if(rid) {
-                let nowQuery = new _root.v.Query('Comment')
-                nowQuery.get(rid).then(res => {
-                    console.log(res.get('comment'))
-                    lastId = res.id
-                    lastNick = res.get('nick')
-                    lastComment = res.get('comment')
-                })
+            let lastComment = `<span/>`
+            if(ret.lastId) {
+                lastComment = `<div class="lastComment">
+                                    <a href="#${ret.lastId}" class="nick">${ret.lastNick}：</a>
+                                    ${ret.lastComment}
+                                </div>`
             }
+            
 
             _vcard.innerHTML = `<a href="${ret.get('link') || 'javascript:void(0);'}" target="_blank" rel="nofollow" class="vavatarContent"> <img class="vavatar" src="${gravatar_url}"/></a>
                                         <section class="text-wrapper">
@@ -345,10 +356,7 @@ class Valine {
                                                 <span class="vtime">${timeAgo(ret.get("createdAt"))}</span>
                                             </div>
                                             <div class="vcomment">${ret.get('comment')}</div>
-                                            <div class="lastComment">
-                                                <a href="#${lastId}" class="nick">${lastNick}：</a>
-                                                ${lastComment}
-                                            </div>
+                                            ${lastComment}
                                         </section>
                                         
                                         <div class="vfooter">
@@ -509,7 +517,7 @@ class Valine {
             }
             comment.set('emailHash', crypto(defaultComment.mail.toLowerCase().trim()));
             comment.setACL(getAcl());
-            comment.save().then((commentItem) => {
+            comment.save().then(async commentItem => {
                 store && store.setItem('ValineCache', JSON.stringify({
                     nick: defaultComment['nick'],
                     link: defaultComment['link'],
@@ -517,6 +525,15 @@ class Valine {
                 }));
                 let _count = _root.el.querySelector('.count');
                 _count.innerText = Number(_count.innerText) + 1;
+                const rid =commentItem.get('rid')
+                if(rid) {
+                    let nowQuery = new _root.v.Query('Comment')
+                    await nowQuery.get(rid).then(res => {
+                        commentItem.lastId = res.id
+                        commentItem.lastNick = res.get('nick')
+                        commentItem.lastComment = res.get('comment')
+                    })
+                }
                 insertComment(commentItem, true);
                 submitBtn.removeAttribute('disabled');
                 _root.submitting.hide();

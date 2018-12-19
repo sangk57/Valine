@@ -431,13 +431,16 @@
         .lastComment {
           padding: 8px 19px;
           margin-top: 10px;
+          font-size: .9rem;
           line-height: 20px;
           background-color: #f4f4f4;
-          border: 1px solid #dedede;
+          
+          // border: 1px solid #dedede;
           .nick {
             
           }
           p {
+            color: #666;
             display: inline-block;
           }
         }
