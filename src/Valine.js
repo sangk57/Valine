@@ -34,6 +34,7 @@ class Valine {
         let _root = this;
         // version
         _root.version = '1.1.7';
+        _root.nowIconTag = 0
         getIp();
         // Valine init
         !!option && _root.init(option);
@@ -51,6 +52,12 @@ class Valine {
             if (toString.call(el) != '[object HTMLDivElement]') {
                 throw `The target element was not found.`;
             }
+
+            let emoticonBtn = []
+            option.emoticon.forEach((item, index) => {
+                emoticonBtn.push(`<div class="vsmile-btn-wrap"><svg class="vsmile-btn${index + 1}" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>`)
+            })
+
             _root.el = el;
             _root.el.classList.add('valine');
             let placeholder = option.placeholder || '';
@@ -63,8 +70,7 @@ class Valine {
                                     <div>
                                         <textarea placeholder="" class="veditor"></textarea>
                                         <div class="comment-smiles">
-                                            <div class="vsmile-btn-wrap"><svg class="vsmile-btn" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>
-                                            <div class="vsmile-btn-wrap"><svg class="vsmile-btn2" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>
+                                            ${emoticonBtn}
                                             <div class="vsmile-icons" style="display:none"></div>
                                         </div>
                                     </div>
@@ -100,15 +106,7 @@ class Valine {
                 }
             }
             _root.nodata.show();
-
-            // load smiles image
-            let _smile_wrapper = _root.el.querySelector('.vsmile-icons');            
-            let smile_names = option.emoticon_list || ["mrgreen", "neutral", "twisted", "arrow", "eek", "smile", "confused", "cool", "evil", "biggrin", "idea", "redface", "razz", "rolleyes", "wink", "cry", "surprised", "lol", "mad", "sad", "exclaim", "question"];
-            for(let i in smile_names) {
-                let img = document.createElement('img');
-                img.setAttribute('src', `${option.emoticon_url}/${smile_names[i]}`);
-                _smile_wrapper.appendChild(img) ;
-            }
+            
             av.init({
                 appId: option.app_id || option.appId,
                 appKey: option.app_key || option.appKey
@@ -206,9 +204,11 @@ class Valine {
         let _root = this;
         // Smile pictures
         let vsmiles = _root.el.querySelector('.vsmile-icons');
+        // 点击详细表情
         Event.on('click', vsmiles, (e) => {
             var textField = _root.el.querySelector('.veditor');
             let imgSrc = e.target.src;
+ 
             if ( typeof imgSrc == 'undefined' ) return;
             // var tag = " ![](/" + imgSrc.replace(/^.*\/(.*\.gif)$/, '$1') + ") ";
             var tag = "!(:" + decodeURI(imgSrc).replace(/^.*\/(.*)$/, '$1') + ":)";
@@ -240,29 +240,58 @@ class Valine {
             _root.el.querySelector('.auth-section').removeAttribute('style');
             _root.el.querySelector('.veditor').focus();
         })
-        let smile_btn = _root.el.querySelector('.vsmile-btn');
-        let xiaohuang = _root.el.querySelector('.vsmile-btn2');
-        let smile_icons = _root.el.querySelector('.vsmile-icons');
-        Event.on('click', smile_btn, (e)=>{
-            if (smile_icons.getAttribute('triggered')) {
-                smile_icons.setAttribute('style', 'display:none;');
-                smile_icons.removeAttribute('triggered');
-            }
-            else {
-                smile_icons.removeAttribute('style');
-                smile_icons.setAttribute('triggered', 1);
-            }
-        });
-        Event.on('click', xiaohuang, (e)=>{
-            if (smile_icons.getAttribute('triggered')) {
-                smile_icons.setAttribute('style', 'display:none;');
-                smile_icons.removeAttribute('triggered');
-            }
-            else {
-                smile_icons.removeAttribute('style');
-                smile_icons.setAttribute('triggered', 1);
-            }
-        });
+        // 点击笑脸出现图标list
+        option.emoticon.forEach((item, index) => {
+            const div_name = `.vsmile-btn${index + 1}`
+            const now_btn = _root.el.querySelector(div_name)
+            Event.on('click', now_btn, (e)=>{
+                if (vsmiles.getAttribute('triggered') && _root.nowIconTag === index) {
+                    vsmiles.setAttribute('style', 'display:none;');
+                    vsmiles.removeAttribute('triggered');
+                }
+                else {
+                    
+                    for(let i = vsmiles.childNodes.length - 1; i >= 0; i--) {
+                        vsmiles.removeChild(vsmiles.childNodes[i])
+                    }
+                    
+                    // 加载表情
+                    _root.nowIconTag = index
+                    let smile_names = option.emoticon[index].icon
+                    for(let i in smile_names) {
+                        let img = document.createElement('img');
+                        img.setAttribute('src', `${option.emoticon[index].url}/${smile_names[i]}`);
+                        vsmiles.appendChild(img)
+                    }
+                    
+                    vsmiles.removeAttribute('style');
+                    vsmiles.setAttribute('triggered', 1);
+                }
+            })
+        })
+        // let smile_btn = _root.el.querySelector('.vsmile-btn');
+        // let xiaohuang = _root.el.querySelector('.vsmile-btn2');
+        
+        // Event.on('click', smile_btn, (e)=>{
+        //     if (smile_icons.getAttribute('triggered')) {
+        //         smile_icons.setAttribute('style', 'display:none;');
+        //         smile_icons.removeAttribute('triggered');
+        //     }
+        //     else {
+        //         smile_icons.removeAttribute('style');
+        //         smile_icons.setAttribute('triggered', 1);
+        //     }
+        // });
+        // Event.on('click', xiaohuang, (e)=>{
+        //     if (smile_icons.getAttribute('triggered')) {
+        //         smile_icons.setAttribute('style', 'display:none;');
+        //         smile_icons.removeAttribute('triggered');
+        //     }
+        //     else {
+        //         smile_icons.removeAttribute('style');
+        //         smile_icons.setAttribute('triggered', 1);
+        //     }
+        // });
 
         // Query && show comment list
 
@@ -393,7 +422,9 @@ class Valine {
                 let _el = _root.el.querySelector(`.${i}`);
                 inputs[_v] = _el;
                 Event.on('input', _el, (e) => {
-                    defaultComment[_v] = HtmlUtil.encode(_el.value.replace(/(^\s*)|(\s*$)/g, ""));
+                    const value = _el.value.replace(/(^\s*)|(\s*$)/g, "")
+                    // defaultComment[_v] = HtmlUtil.encode(_el.value.replace(/(^\s*)|(\s*$)/g, ""));
+                    defaultComment[_v] = value
                 });
             }
         }
@@ -450,9 +481,12 @@ class Valine {
             if (defaultComment.nick == '') {
                 defaultComment['nick'] = '小调皮';
             }
-            // replace smiles
-            defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `![](${option.emoticon_url}/$1)`);
+            // 直接显示图片，直接传过来（marked）
+            // defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `![](${option.emoticon}/$1)`);
             defaultComment.comment = marked(defaultComment.comment);
+
+            console.log(defaultComment.comment)
+            return
             let idx = defaultComment.comment.indexOf(defaultComment.at);
             if (idx > -1 && defaultComment.at != '') {
                 let at = `<a class="at" href='#${defaultComment.rid}'>${defaultComment.at}</a>`;

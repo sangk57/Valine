@@ -300,14 +300,17 @@
       display: -ms-flexbox;
       flex-direction: row;
       padding: 2em 1em;
-      border-top: 1px solid rgba(150, 150, 150, 0.18);
+      border-top: 1px dotted #ccc;
       // margin: 2em 0 0;
       list-style: none;
-      border-radius: 5px;
+      // border-radius: 5px;
       word-break: break-all;
-      &:hover {
-        border-top: 1px solid rgba(150, 150, 150, 0.25);
+      &:nth-child(2){
+        border-top: 1px solid #ccc;
       }
+      // &:hover {
+      //   border-top: 1px solid rgba(150, 150, 150, 0.25);
+      // }
 
       .vfooter {
         // margin: -2em 0 0;
@@ -434,7 +437,7 @@
           font-size: .9rem;
           line-height: 20px;
           background-color: #f4f4f4;
-          
+          // border-radius: 
           // border: 1px solid #dedede;
           .nick {
             
