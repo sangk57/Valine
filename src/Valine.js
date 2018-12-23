@@ -381,16 +381,17 @@ class Valine {
                                         <section class="text-wrapper">
                                             <div class="vhead" >
                                                 <a href="${ret.get('link') || 'javascript:void(0);'}" target="_blank" rel="nofollow" > ${ret.get("nick")}</a>
-                                                <span class="spacer">•</span>
-                                                <span class="vtime">${timeAgo(ret.get("createdAt"))}</span>
+                                                <span class="spacer">:</span>
                                             </div>
                                             <div class="vcomment">${ret.get('comment')}</div>
                                             ${lastComment}
-                                        </section>
+                                            <div class="vfooter">
+                                                <span class="vtime">${timeAgo(ret.get("createdAt"))}</span>
+                                                <a rid='${ret.id}' at='回复：${ret.get('nick')}' class="vat">回复</a>
+                                            </div>
+                                        </section>`;
                                         
-                                        <div class="vfooter">
-                                            <a rid='${ret.id}' at='@${ret.get('nick')}' class="vat">回复</a>
-                                        </div>`;
+                                        
             let _vlist = _root.el.querySelector('.vlist');
             let _vlis = _vlist.querySelectorAll('li');
             let _vat = _vcard.querySelector('.vat');
@@ -481,17 +482,17 @@ class Valine {
             if (defaultComment.nick == '') {
                 defaultComment['nick'] = '小调皮';
             }
-            // 直接显示图片，直接传过来（marked）
-            // defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `![](${option.emoticon}/$1)`);
+            // 统一URL加前缀吧
+            defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `<img style="max-height:3rem; margin-left: 2px;" src="${option.emoticon[0].url}/$1" />`);
             defaultComment.comment = marked(defaultComment.comment);
 
-            console.log(defaultComment.comment)
-            return
             let idx = defaultComment.comment.indexOf(defaultComment.at);
             if (idx > -1 && defaultComment.at != '') {
                 let at = `<a class="at" href='#${defaultComment.rid}'>${defaultComment.at}</a>`;
                 defaultComment.comment = defaultComment.comment.replace(defaultComment.at, at);
             }
+            // console.log(defaultComment)
+            // return
             // veirfy
             let mailRet = check.mail(defaultComment.mail);
             let linkRet = check.link(defaultComment.link);
@@ -568,6 +569,7 @@ class Valine {
                         commentItem.lastComment = res.get('comment')
                     })
                 }
+                _root.el.querySelector('.veditor').setAttribute('placeholder', '')
                 insertComment(commentItem, true);
                 submitBtn.removeAttribute('disabled');
                 _root.submitting.hide();
@@ -582,15 +584,19 @@ class Valine {
         let bindAtEvt = (el) => {
             Event.on('click', el, (e) => {
                 let at = el.getAttribute('at');
+                console.log(at)
                 let rid = el.getAttribute('rid');
+                let textField = _root.el.querySelector('.veditor');
                 defaultComment['rid'] = rid;
                 defaultComment['at'] = at;
-                inputs['comment'].value = `${at} ，` + inputs['comment'].value;
+                // inputs['comment'].value = `${at} ，` + inputs['comment'].value;
+                inputs['comment'].value = ''
                 inputs['comment'].focus();
                 // remove comment trigger
                 _root.el.querySelector('.comment_trigger').setAttribute('style', 'display:none');
                 _root.el.querySelector('.auth-section').removeAttribute('style');
-                _root.el.querySelector('.veditor').focus();
+                textField.setAttribute('placeholder', at)
+                textField.focus();
             })
         }
 
