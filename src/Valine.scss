@@ -2,13 +2,16 @@
   * {
     box-sizing: border-box;
     // font-family: PingFang SC,Lantinghei SC,Helvetica Neue,Helvetica,Arial,Microsoft YaHei,STHeitiSC-Light,simsun,WenQuanYi Zen Hei,WenQuanYi Micro Hei,"sans-serif";
-    font-size: 100%;
+    // font-size: 100%;
     font-weight: normal;
     line-height: 1.42857143;
     color: #3c484e;
     transition: all .3s ease;
     margin: 0;
     padding: 0;
+  }
+  a {
+    border-bottom: none;
   }
   .vwrap {
     overflow: hidden;
@@ -17,28 +20,48 @@
 
     .comment-smiles {
       margin: 0;
-      padding: 0 1em;
-      margin: .5em 0;
+      // padding: 0 1em;
+      margin-top: .5em;
+      border-top: 1px dotted #ededed;
+      text-align: right;
       .vsmile-btn-wrap {
         display: inline-block;
-        width: 2em;
-        height: 1.7em;
+        // position: relative;
+        // width: 50px;
+        // height: 30px;
+        cursor: pointer;
+        // border-left: 1px solid #c4c8cb;
+        // border-right: 1px solid #c4c8cb;
+        img {
+          margin-right: 10px;
+          // position: absolute;
+          // top: 50%;
+          // left: 50%;
+          // margin-top: -10px;
+          // margin-left: -10px;
+          &:hover {
+            transform: scale(1.2);
+            -webkit-transform: scale(1.2);
+          }
+        }
         svg {
           fill: #aaaaaa;
           // float: right;
-          cursor: pointer;
+          // cursor: pointer;
           &:hover{
             fill: #777777;
           }
         }
       }
       .vsmile-icons {
-        padding: .2em 0;
-        margin: .3em 0;
-        border-top: 1px solid #ededed;
+        padding: .2em 1em;
+        // padding: 0 1em;
+        margin-bottom: .3em;
+        border-top: 1px dotted #ededed;
         border-radius: 0;
-        max-height: 64px;
+        max-height: 180px;
         overflow: auto;
+        text-align: left;
         img {
           width: auto !important;
           height: 28px !important;
@@ -89,11 +112,12 @@
       textarea {
         padding: 1em 1em 0;
         // color: #4b5b62;
+        font-size: 100%;
         width: 100%;
         background: #fff;
         border: none;
         resize: none;
-        min-height: 3em;
+        min-height: 5em;
         &:focus {
           border-color: #c4c8cb;
           outline: 0
@@ -389,6 +413,7 @@
         .vcomment {
           position: relative;
           p {
+            display: inline-block;
             word-wrap: break-word;
             white-space: pre-wrap;
             word-break: break-all;
@@ -445,7 +470,7 @@
           // border-radius: 
           // border: 1px solid #dedede;
           .nick {
-            
+            color: #3eb0ef;
           }
           p {
             color: #666;

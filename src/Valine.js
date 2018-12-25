@@ -52,11 +52,16 @@ class Valine {
             if (toString.call(el) != '[object HTMLDivElement]') {
                 throw `The target element was not found.`;
             }
+            // <svg class="vsmile-btn${index + 1}" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg>
 
             let emoticonBtn = []
             option.emoticon.forEach((item, index) => {
-                emoticonBtn.push(`<div class="vsmile-btn-wrap"><svg class="vsmile-btn${index + 1}" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2372" xmlns:xlink="http://www.w3.org/1999/xlink" width="1.6em" height="1.6em"><defs><style type="text/css"></style></defs><path d="M16 512c0 274 222 496 496 496s496-222 496-496S786 16 512 16 16 238 16 512z m400-96c0 35.4-28.6 64-64 64s-64-28.6-64-64 28.6-64 64-64 64 28.6 64 64z m317 33c-29.6-26.4-92.4-26.4-122 0L592 466c-16.6 14.8-43.2 0.8-39.6-21.6 8-50.4 68.4-84.2 119.8-84.2S784 394 792 444.4c3.4 22.2-22.8 36.6-39.6 21.6l-19.4-17zM331.6 651.6C376.4 705.4 442 736 512 736s135.6-30.8 180.4-84.4c27.2-32.4 76.2 8.4 49.2 41C684.6 760.8 601 800 512 800s-172.6-39.2-229.6-107.6c-27-32.6 22.4-73.4 49.2-40.8z" fill="" p-id="2373"></path></svg></div>`)
+                emoticonBtn.push(`<div class="vsmile-btn-wrap">
+                
+                <img class="vsmile-btn${index + 1}" src="${option.emoticon_url}/${item.cover}" height="20px" />
+                </div>`)
             })
+            const emoticonBtnEle = emoticonBtn.join('')
 
             _root.el = el;
             _root.el.classList.add('valine');
@@ -68,9 +73,9 @@ class Valine {
                                         <div class="trigger_title">${placeholder}</div>
                                     </div>
                                     <div>
-                                        <textarea placeholder="" class="veditor"></textarea>
+                                        <textarea placeholder="畅所欲言吧！( ‵▽′)ψ " class="veditor"></textarea>
                                         <div class="comment-smiles">
-                                            ${emoticonBtn}
+                                            ${emoticonBtnEle}
                                             <div class="vsmile-icons" style="display:none"></div>
                                         </div>
                                     </div>
@@ -211,7 +216,8 @@ class Valine {
  
             if ( typeof imgSrc == 'undefined' ) return;
             // var tag = " ![](/" + imgSrc.replace(/^.*\/(.*\.gif)$/, '$1') + ") ";
-            var tag = "!(:" + decodeURI(imgSrc).replace(/^.*\/(.*)$/, '$1') + ":)";
+            console.log(decodeURI(imgSrc))
+            var tag = "!(:" + decodeURI(imgSrc).replace(/.*\/([^\/]+\/[^\/]+)$/, '$1') + ":)";
             if (document.selection) {
                 textField.focus();
                 sel = document.selection.createRange();
@@ -260,7 +266,7 @@ class Valine {
                     let smile_names = option.emoticon[index].icon
                     for(let i in smile_names) {
                         let img = document.createElement('img');
-                        img.setAttribute('src', `${option.emoticon[index].url}/${smile_names[i]}`);
+                        img.setAttribute('src', `${option.emoticon_url}/${smile_names[i]}`);
                         vsmiles.appendChild(img)
                     }
                     
@@ -369,9 +375,15 @@ class Valine {
             let gravatar_url = GRAVATAR_BASE_URL + emailHash + '?size=80';
 
             let lastComment = `<span/>`
+
+            // ${ret.get('link') ? 
+            //     `<a href="${ret.get('link') || 'javascript:void(0);'}" class="nick">${ret.lastNick}：</a>` 
+            //     : 
+            //     `<span class="nick">${ret.lastNick}：</span>`
+            // }
             if(ret.lastId) {
                 lastComment = `<div class="lastComment">
-                                    <a href="#${ret.lastId}" class="nick">${ret.lastNick}：</a>
+                                    <a href="${ret.get('link') || 'javascript:void(0);'}" class="nick">${ret.lastNick}：</a>
                                     ${ret.lastComment}
                                 </div>`
             }
@@ -460,7 +472,7 @@ class Valine {
                 }
             }
             defaultComment['rid'] = '';
-            defaultComment['nick'] = '小可爱';
+            defaultComment['nick'] = '';
             getCache();
         }
 
@@ -480,10 +492,10 @@ class Valine {
                 return;
             }
             if (defaultComment.nick == '') {
-                defaultComment['nick'] = '小调皮';
+                defaultComment['nick'] = '不知名的大侠';
             }
             // 统一URL加前缀吧
-            defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `<img style="max-height:3rem; margin-left: 2px;" src="${option.emoticon[0].url}/$1" />`);
+            defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `<img style="max-height:3rem; margin-left: 2px;" src="${option.emoticon_url}/$1" />`);
             defaultComment.comment = marked(defaultComment.comment);
 
             let idx = defaultComment.comment.indexOf(defaultComment.at);
