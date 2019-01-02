@@ -342,6 +342,7 @@ class Valine {
                             await nowQuery.get(rid).then(res => {
                                 rets[i].lastId = res.id
                                 rets[i].lastNick = res.get('nick')
+                                rets[i].lastLink = res.get('link')
                                 rets[i].lastComment = res.get('comment')
                             })
                         }
@@ -383,7 +384,7 @@ class Valine {
             // }
             if(ret.lastId) {
                 lastComment = `<div class="lastComment">
-                                    <a href="${ret.get('link') || 'javascript:void(0);'}" class="nick">${ret.lastNick}：</a>
+                                    <a href="${ret.lastLink || 'javascript:void(0);'}" class="nick">${ret.lastNick}：</a>
                                     ${ret.lastComment}
                                 </div>`
             }
@@ -510,18 +511,10 @@ class Valine {
             let linkRet = check.link(defaultComment.link);
             defaultComment['mail'] = mailRet.k ? mailRet.v : '';
             defaultComment['link'] = linkRet.k ? linkRet.v : '';
-            if (!mailRet.k && !linkRet.k) {
+            if (!mailRet.k) {
                 _root.alert.show({
                     type: 1,
-                    text: '您的网址和邮箱格式不正确, 将导致无法正确显示头像和接收回复通知邮件。是否继续提交?',
-                    cb() {
-                        commitEvt()
-                    }
-                })
-            } else if (!mailRet.k) {
-                _root.alert.show({
-                    type: 1,
-                    text: '您的邮箱格式不正确, 将导致无法正确显示头像和接收回复通知邮件。是否继续提交?',
+                    text: '填写正确邮箱会第一时间给您发送回复提醒噢~',
                     cb() {
                         commitEvt();
                     }
@@ -529,7 +522,7 @@ class Valine {
             } else if (!linkRet.k) {
                 _root.alert.show({
                     type: 1,
-                    text: '您的网址格式不正确, 是否继续提交?',
+                    text: '网址格式不正确噢，看看少了点啥?',
                     cb() {
                         commitEvt();
                     }
