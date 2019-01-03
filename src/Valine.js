@@ -192,7 +192,7 @@ class Valine {
 
         _root.loading.show();
         var query = new _root.v.Query('Comment');
-        query.equalTo('url', defaultComment['url']);
+        query.equalTo('url', encodeURI(decodeURI(defaultComment['url'])));
         query.notEqualTo('isSpam', true);
         query.count().then(function (count) {
             _root.el.querySelector('.count').innerHTML = `${count}`;
@@ -216,7 +216,6 @@ class Valine {
  
             if ( typeof imgSrc == 'undefined' ) return;
             // var tag = " ![](/" + imgSrc.replace(/^.*\/(.*\.gif)$/, '$1') + ") ";
-            console.log(decodeURI(imgSrc))
             var tag = "!(:" + decodeURI(imgSrc).replace(/.*\/([^\/]+\/[^\/]+)$/, '$1') + ":)";
             if (document.selection) {
                 textField.focus();
@@ -314,7 +313,7 @@ class Valine {
             let query = new _root.v.Query('Comment');
             query.select(['nick', 'comment', 'link', 'rid', 'emailHash']);
             query.notEqualTo('isSpam', true);
-            query.equalTo('url', defaultComment['url']);
+            query.equalTo('url', encodeURI(decodeURI(defaultComment['url'])));
             query.addDescending('createdAt');
 
             return query;
@@ -495,7 +494,6 @@ class Valine {
             if (defaultComment.nick == '') {
                 defaultComment['nick'] = '不知名的大侠';
             }
-            // 统一URL加前缀吧
             defaultComment.comment = defaultComment.comment.replace(/!\(:(.*?\.\w+):\)/g, `<img style="max-height:3rem; margin-left: 2px;" src="${option.emoticon_url}/$1" />`);
             defaultComment.comment = marked(defaultComment.comment);
 
@@ -555,6 +553,7 @@ class Valine {
                     comment.set(i, _v);
                 }
             }
+            comment.set('url',  encodeURI(decodeURI(defaultComment.url)));
             comment.set('emailHash', crypto(defaultComment.mail.toLowerCase().trim()));
             comment.setACL(getAcl());
             comment.save().then(async commentItem => {
@@ -589,7 +588,6 @@ class Valine {
         let bindAtEvt = (el) => {
             Event.on('click', el, (e) => {
                 let at = el.getAttribute('at');
-                console.log(at)
                 let rid = el.getAttribute('rid');
                 let textField = _root.el.querySelector('.veditor');
                 defaultComment['rid'] = rid;
